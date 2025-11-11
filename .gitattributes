@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Always prefer branch version of liara.json
+liara.json merge=ours
