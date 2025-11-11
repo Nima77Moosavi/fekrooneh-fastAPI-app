@@ -17,21 +17,6 @@ services:
       - db
       - redis
 
-  consumer:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
-    command: python consumers/leaderboard_consumer.py
-    volumes:
-      - .:/code
-    environment:
-      - DATABASE_URL=postgresql+asyncpg://nima:secret123@db:5432/mydb
-      - REDIS_URL=redis://redis:6379
-    depends_on:
-      - db
-      - redis
-    restart: on-failure
-
   db:
     image: postgres:15
     restart: always
