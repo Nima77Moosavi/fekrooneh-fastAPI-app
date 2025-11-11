@@ -5,7 +5,7 @@ from datetime import date
 class UserCreate(BaseModel):
     username: str
     password: str
-    xp: int
+    xp: int = 0
 
 
 class UserRead(BaseModel):
@@ -22,7 +22,6 @@ class UserRead(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    username: str | None = None
     password: str | None = None
     xp: int | None = None
     streak: int | None = None

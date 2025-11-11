@@ -27,7 +27,7 @@ async def seed_users(
     for i in range(count):
         payload = UserCreate(
             username=f"user{i+1}",
-            password="password123",   # simple default for seeding
+            password="pass",
             xp=random.randint(1, 100) * 10,
             frozen_days=0,
             streak=0,
@@ -52,7 +52,7 @@ async def get_user(
     return user
 
 
-@router.put("/{user_id}", response_model=UserRead)
+@router.patch("/{user_id}", response_model=UserRead)
 async def update_user(
     user_id: int,
     payload: UserUpdate,

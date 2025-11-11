@@ -3,16 +3,13 @@ name: CI/CD
 on:
   push:
     branches:
-      - app
-      - consumer
+      - main
   pull_request:
     branches:
-      - app
-      - consumer
+      - main
 
 jobs:
   app:
-    if: github.ref_name == 'app'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -51,25 +48,3 @@ jobs:
         env:
           LIARA_TOKEN: ${{ secrets.LIARA_API_TOKEN }}
         run: liara deploy --app fekrooneh --api-token "$LIARA_TOKEN" --no-app-logs
-
-  consumer:
-    if: github.ref_name == 'consumer'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: "3.11"
-
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Install Liara CLI
-        run: npm install -g @liara/cli@7
-
-      - name: Deploy to Liara (Consumer)
-        env:
-          LIARA_TOKEN: ${{ secrets.LIARA_API_TOKEN }}
-        run: liara deploy --app fekrooneh-consumer --api-token "$LIARA_TOKEN" --no-app-logs
