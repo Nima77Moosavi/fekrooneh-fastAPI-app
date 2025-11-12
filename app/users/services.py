@@ -100,13 +100,13 @@ class UserService:
             )
         return len(users)
 
-    async def checkin(self, username: str) -> User:
+    async def checkin(self, user_id: int) -> User:
         """
         Daily check-in logic:
         - Updates streaks, XP, and frozen days.
         - Publishes event to Redis.
         """
-        user = await self.repo.get_by_username(username)
+        user = await self.repo.get_by_id(user_id)
         if not user:
             raise HTTPException(status_code=404, detail="User not found")
 

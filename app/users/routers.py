@@ -105,9 +105,9 @@ async def delete_all_users(
     return {"message": f"Deleted {deleted_count} users"}
 
 
-@router.post("/{username}/checkin", response_model=UserRead)
+@router.post("/{user_id}/checkin", response_model=UserRead)
 async def checkin_user(
-    username: str,
+    user_id: int,
     service: UserService = Depends(get_user_service)
 ):
     """
@@ -115,7 +115,7 @@ async def checkin_user(
     - Updates streaks, XP, and frozen days.
     - Publishes leaderboard event to Redis.
     """
-    return await service.checkin(username)
+    return await service.checkin(user_id)
 
 
 @router.post("/sync-redis")
