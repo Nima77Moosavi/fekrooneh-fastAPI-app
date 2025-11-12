@@ -45,6 +45,7 @@ class UserRepository:
         return user
 
     async def delete_all(self) -> int:
-        result = await self.db.execute(delete(User))
+        result = await self.db.execute(delete(User).returning(User.id))
+        deleted_ids = result.scalars().all()
         await self.db.commit()
-        return result.rowcount or 0
+        return len(deleted_ids)

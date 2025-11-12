@@ -26,6 +26,7 @@ class UserUpdate(BaseModel):
     xp: int | None = None
     streak: int | None = None
     frozen_days: int | None = None
+    last_checkin: date | None = None
 
 
 class UserLookup(BaseModel):

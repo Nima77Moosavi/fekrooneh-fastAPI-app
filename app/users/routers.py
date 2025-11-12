@@ -9,6 +9,7 @@ from app.users.dependencies import get_user_service
 router = APIRouter(prefix="/users", tags=["users"])
 
 
+# Create endpoints
 @router.post("/", response_model=UserRead)
 async def create_user(
     payload: UserCreate,
@@ -52,12 +53,12 @@ async def get_user(
     return user
 
 
-@router.patch("/{user_id}", response_model=UserRead)
+@router.patch("/{user_id}")
 async def update_user(
     user_id: int,
     payload: UserUpdate,
     service: UserService = Depends(get_user_service)
-):
+) -> UserRead:
     user = await service.find_user_by_id(user_id)
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
