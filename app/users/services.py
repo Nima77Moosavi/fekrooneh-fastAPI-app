@@ -8,7 +8,7 @@ from fastapi import HTTPException
 from .models import User
 from .schemas import UserCreate, UserUpdate
 from .repositories import UserRepository
-from app.users.events import publish_leaderboard_event
+from app.users.events import publish_leaderboard_event, clear_leaderboard
 
 
 class UserService:
@@ -89,6 +89,7 @@ class UserService:
         Publish all users to Redis for leaderboard sync.
         Returns the number of users synced.
         """
+        await clear_leaderboard()
         users = await self.repo.list_all()  # implement list_all in UserRepository
         for user in users:
             await publish_leaderboard_event(

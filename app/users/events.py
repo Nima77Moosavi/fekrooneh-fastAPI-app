@@ -6,6 +6,13 @@ import redis.asyncio as redis
 # Get Redis URL from environment, fallback to local default
 REDIS_URL = os.getenv("REDIS_URL", "redis://redis-server:6379")
 LEADERBOARD_STREAM = "leaderboard_events"
+LEADERBOARD_KEY = "leaderboard:global"
+
+async def clear_leaderboard():
+    r = redis.from_url(REDIS_URL, decode_responses=True)
+    deleted = await r.delete(LEADERBOARD_KEY)
+    await r.close()
+    print(f"✅ Cleared leaderboard ({deleted} key(s) removed).")
 
 async def publish_leaderboard_event(
     event_type: str,
