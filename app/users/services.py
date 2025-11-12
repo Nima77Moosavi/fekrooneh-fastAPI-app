@@ -135,6 +135,7 @@ class UserService:
                     # Not enough frozen days → reset streak
                     user.streak = 1
                     user.frozen_days = 0
+                    user.last_streak_reset = today
 
         # Update max streak
         if user.streak > user.max_streak:

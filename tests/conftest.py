@@ -63,3 +63,6 @@ async def mock_redis():
     # Patch the redis.from_url to return this mock
     with patch("app.events.redis.from_url", return_value=mock):
         yield mock
+
+# $env:PYTHONPATH="."
+#  pytest -v
