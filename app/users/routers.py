@@ -2,7 +2,7 @@ import random
 
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.users.schemas import UserCreate, UserRead, UserUpdate
+from app.users.schemas import UserCreate, UserRead, UserUpdate, UserLog
 from app.users.services import UserService
 from app.users.dependencies import get_user_service
 
@@ -51,6 +51,23 @@ async def get_user(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+
+@router.get("/log/{user_id}")
+async def log_user(
+    user_id: int,
+    service: UserService = Depends(get_user_service)
+) -> UserLog:
+    user = await service.find_user_by_id(user_id)
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return UserLog(
+        xp=user.xp,
+        streak=user.streak,
+        max_streak=user.max_streak,
+        last_checkin=user.last_checkin,
+        last_strake_reset=user.last_streak_reset
+    )
 
 
 @router.patch("/{user_id}")

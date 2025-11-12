@@ -19,6 +19,13 @@ class UserRead(BaseModel):
     last_streak_reset: date | None
 
     model_config = ConfigDict(from_attributes=True)
+    
+class UserLog(BaseModel):
+    xp: int
+    streak: int
+    max_streak: int
+    last_checkin: date | None
+    last_strake_reset: date | None
 
 
 class UserUpdate(BaseModel):
