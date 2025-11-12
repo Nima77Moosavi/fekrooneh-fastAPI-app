@@ -34,6 +34,21 @@ services:
     networks:
       - fekrooneh
 
+  test_db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: nima
+      POSTGRES_PASSWORD: secret123
+      POSTGRES_DB: test_db
+      PGDATA: /var/lib/postgresql/test_pgdata
+    volumes:
+      - test_postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5433:5432"  # mapped to a different host port so it doesn’t conflict
+    networks:
+      - fekrooneh
+
   redis:
     image: redis:7
     restart: always
@@ -50,4 +65,5 @@ networks:
 
 volumes:
   postgres_data:
+  test_postgres_data:
   redis_data:
