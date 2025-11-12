@@ -76,6 +76,14 @@ class UserService:
         """
         return await self.repo.delete(user)
     
+    async def delete_all_users(self) -> int:
+        """
+        Delete all users from the repository.
+        Returns the number of deleted rows.
+        """
+        return await self.repo.delete_all()
+
+    
     async def sync_all_users_to_redis(self) -> int:
         """
         Publish all users to Redis for leaderboard sync.

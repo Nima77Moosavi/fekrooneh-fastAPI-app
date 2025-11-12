@@ -1,5 +1,5 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy import select, delete
 from .models import User
 from .schemas import UserCreate, UserUpdate
 
@@ -43,3 +43,8 @@ class UserRepository:
         await self.db.delete(user)
         await self.db.commit()
         return user
+
+    async def delete_all(self) -> int:
+        result = await self.db.execute(delete(User))
+        await self.db.commit()
+        return result.rowcount or 0

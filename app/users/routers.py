@@ -75,6 +75,18 @@ async def delete_user(
     return await service.delete_user(user)
 
 
+@router.delete("/", response_model=dict)
+async def delete_all_users(
+    service: UserService = Depends(get_user_service)
+):
+    """
+    Delete all users from the database.
+    ⚠️ Use with caution — this wipes the entire table.
+    """
+    deleted_count = await service.delete_all_users()
+    return {"message": f"Deleted {deleted_count} users"}
+
+
 @router.post("/{username}/checkin", response_model=UserRead)
 async def checkin_user(
     username: str,
