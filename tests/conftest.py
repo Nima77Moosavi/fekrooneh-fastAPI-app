@@ -7,7 +7,7 @@ from app.database import Base, get_db
 import redis.asyncio as redis
 
 TEST_DATABASE_URL = "postgresql+asyncpg://nima:secret123@test_db:5432/test_db"
-TEST_REDIS_URL = "redis://redis:6379"
+TEST_REDIS_URL = "redis://test_redis:6379"
 
 # ---------------------------
 # DB engine (module scoped)
@@ -47,7 +47,7 @@ async def redis_client():
     client = redis.Redis.from_url(TEST_REDIS_URL, decode_responses=True)
     yield client
     await client.flushall()
-    await client.aclose()  # <-- use aclose() to avoid deprecation warning
+    await client.aclose()
 
 # ---------------------------
 # Async client
@@ -59,4 +59,4 @@ async def async_client(test_db_session, redis_client):
         base_url="http://test"
     ) as client:
         yield client
-    await client.aclose()  # <-- use aclose() instead of close()
+    await client.aclose()
