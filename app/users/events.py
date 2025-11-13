@@ -11,7 +11,7 @@ LEADERBOARD_KEY = "leaderboard:global"
 async def clear_leaderboard():
     r = redis.from_url(REDIS_URL, decode_responses=True)
     deleted = await r.delete(LEADERBOARD_KEY)
-    await r.close()
+    await r.aclose()
     print(f"✅ Cleared leaderboard ({deleted} key(s) removed).")
 
 async def publish_leaderboard_event(
@@ -32,4 +32,4 @@ async def publish_leaderboard_event(
         event["streak"] = streak
 
     await r.xadd(LEADERBOARD_STREAM, event)
-    await r.close()
+    await r.aclose()

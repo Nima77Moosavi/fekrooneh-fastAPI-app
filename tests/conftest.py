@@ -1,68 +1,62 @@
-import asyncio
-import os
-import pytest_asyncio
-from httpx import AsyncClient
-from httpx import ASGITransport
+import pytest
+from httpx import AsyncClient, ASGITransport
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker
 from app.main import app
 from app.database import Base, get_db
-from unittest.mock import AsyncMock, patch
 import redis.asyncio as redis
 
-# ---------------------------
-# 1️⃣ Async Test Client
-# ---------------------------
-@pytest_asyncio.fixture
-async def async_client():
-    transport = ASGITransport(app=app)
-    async with AsyncClient(transport=transport, base_url="http://test") as client:
-        yield client
-
+TEST_DATABASE_URL = "postgresql+asyncpg://nima:secret123@test_db:5432/test_db"
+TEST_REDIS_URL = "redis://redis:6379"
 
 # ---------------------------
-# 2️⃣ Temporary Test Database
+# DB engine (module scoped)
 # ---------------------------
-
-TEST_DATABASE_URL = "postgresql+asyncpg://nima:secret123@localhost:5433/test_db"
-
-
-@pytest_asyncio.fixture(scope="session")
+@pytest.fixture(scope="module")
 async def test_engine():
     engine = create_async_engine(TEST_DATABASE_URL, echo=False)
     async with engine.begin() as conn:
-        # Drop all tables first (just in case) and recreate
         await conn.run_sync(Base.metadata.drop_all)
         await conn.run_sync(Base.metadata.create_all)
     yield engine
     await engine.dispose()
 
-
-@pytest_asyncio.fixture
+# ---------------------------
+# DB session per test
+# ---------------------------
+@pytest.fixture
 async def test_db_session(test_engine):
     async_session = sessionmaker(
         test_engine, expire_on_commit=False, class_=AsyncSession
     )
     async with async_session() as session:
-        # Override FastAPI dependency
-        async def _get_test_session():
+
+        async def override_get_db():
             yield session
 
-        app.dependency_overrides[get_db] = _get_test_session
+        app.dependency_overrides[get_db] = override_get_db
         yield session
-        await session.rollback()  # rollback after each test
-
+        await session.rollback()
+        app.dependency_overrides.clear()
 
 # ---------------------------
-# 3️⃣ Mock Redis
+# Real Redis client
 # ---------------------------
+@pytest.fixture
+async def redis_client():
+    client = redis.Redis.from_url(TEST_REDIS_URL, decode_responses=True)
+    yield client
+    await client.flushall()
+    await client.aclose()  # <-- use aclose() to avoid deprecation warning
 
-@pytest_asyncio.fixture
-async def mock_redis():
-    mock = AsyncMock(spec=redis.Redis)
-    # Patch the redis.from_url to return this mock
-    with patch("app.events.redis.from_url", return_value=mock):
-        yield mock
-
-# $env:PYTHONPATH="."
-#  pytest -v
+# ---------------------------
+# Async client
+# ---------------------------
+@pytest.fixture
+async def async_client(test_db_session, redis_client):
+    async with AsyncClient(
+        transport=ASGITransport(app=app),
+        base_url="http://test"
+    ) as client:
+        yield client
+    await client.aclose()  # <-- use aclose() instead of close()
