@@ -9,6 +9,10 @@ import redis.asyncio as redis
 TEST_DATABASE_URL = "postgresql+asyncpg://nima:secret123@test_db:5432/test_db"
 TEST_REDIS_URL = "redis://test_redis:6379"
 
+@pytest.fixture(scope="module")
+def anyio_backend():
+    return "asyncio"
+
 # ---------------------------
 # DB engine (module scoped)
 # ---------------------------

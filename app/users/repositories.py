@@ -33,7 +33,7 @@ class UserRepository:
         return result.scalars().all()
 
     async def update(self, user: User, payload: UserUpdate) -> User:
-        for field, value in payload.dict(exclude_unset=True).items():
+        for field, value in payload.model_dump(exclude_unset=True).items():
             setattr(user, field, value)
         await self.db.commit()
         await self.db.refresh(user)
