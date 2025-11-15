@@ -2,7 +2,6 @@ import os
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import sessionmaker, DeclarativeBase
 
-# Read Liara's DATABASE_URL from environment
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
     "postgresql+asyncpg://nima:secret123@db:5432/mydb"
